@@ -1,0 +1,57 @@
+---
+title: "World of Wars"
+format: html
+server: shiny
+---
+
+
+
+```{r}
+box::use(
+  reactable[reactableOutput]
+  )
+
+# shiny::mainPanel(
+#   shiny::fluidRow(
+    reactableOutput("table")
+#     )
+# )
+
+```
+
+```{r}
+#| context: server
+box::use(
+  R/data_processing,
+  reactable[...],
+ # shiny[...],
+  htmltools[...]
+  )
+
+df <- data_processing$process_raw_war_data("data/Inter-StateWarData_v4.0.csv")
+
+df <- data_processing$aggregate_war_data(df)
+#
+output$table <- renderReactable({
+  reactable(
+    df,
+    
+    columns = list(
+      war_details = colDef(
+        html = TRUE,
+        align = "center"
+      ),
+      initiators = colDef(
+        html = TRUE,
+        align = "center"
+        ),
+      defenders = colDef(
+        html = TRUE,
+        align = "center"
+      )
+    )
+  )
+  })
+
+
+```
