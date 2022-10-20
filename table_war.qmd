@@ -1,21 +1,62 @@
 ---
 title: "World of Wars"
-format: html
+format: 
+  html:
+    page-layout: custom
 server: shiny
 ---
 
-
-
 ```{r}
-box::use(
-  reactable[reactableOutput]
+#| panel: sidebar
+
+box::use(shinyWidgets[...])
+
+shiny::sliderInput(
+  "period_time",
+  "Select the period of time:",
+  min = 1823,
+  max = 2003,
+  value = c(1823, 2003)
   )
 
-# shiny::mainPanel(
-#   shiny::fluidRow(
-    reactableOutput("table")
-#     )
+shiny::sliderInput(
+  "casualties_input",
+  "Select the total number of casualties:",
+  min = 0,
+  max = 1e4,
+  #value = c(0, 17e6),
+  value = 1500,
+  step = 1
+)
+
+# multiInput(
+#    inputId = "states_input",
+#    label = "States involved:",
+#    choices = c("Spain", "UK")#,
+#    # choiceNames = lapply(seq_along(countries),
+#    #                      function(i) tagList(tags$img(src = flags[i],
+#    #                                                   width = 20,
+#    #                                                   height = 15),
+#    #                                          countries[i])
+#    #                      ),
+#    # choiceValues = countries
 # )
+#uiOutput("country_selector")
+
+    
+
+
+```
+
+```{r}
+#| panel: fill
+box::use(
+  reactable[...],
+  leaflet[...]
+  )
+leafletOutput("world_map")
+reactableOutput("table")
+
 
 ```
 
@@ -23,34 +64,82 @@ box::use(
 #| context: server
 box::use(
   R/data_processing,
+  R/map_functions,
   reactable[...],
- # shiny[...],
-  htmltools[...]
+  htmltools[...],
+  dplyr[...],
+  shinyWidgets[...],
+  leaflet[...],
+  glue[...],
+  maps[...]
   )
 
-df <- data_processing$process_raw_war_data("data/Inter-StateWarData_v4.0.csv")
+process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWarData_v4.0.csv")
 
-df <- data_processing$aggregate_war_data(df)
-#
+# Update the values of the states involved
+state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
+
+flags <- unlist(state_flags$country_flag)
+
+
+# output$country_selector <- renderUI({
+#   
+# })
+
+
+aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
+
+filtered_war_data <- reactive({
+  df = aggregated_war_data %>% 
+  filter(total_deaths < input$casualties_input)
+  return(df)
+})
+
 output$table <- renderReactable({
   reactable(
-    df,
-    
+    filtered_war_data(),
+    defaultColDef = colDef(show = FALSE),
     columns = list(
       war_details = colDef(
         html = TRUE,
-        align = "center"
+        align = "center",
+        name = "War",
+        show = TRUE
       ),
       initiators = colDef(
         html = TRUE,
-        align = "center"
+        align = "center",
+        name = glue("Initiators {htmltools::img(src = 'images/initiators.jpg', style = 'height: 24px;')}"),
+        show = TRUE
         ),
       defenders = colDef(
         html = TRUE,
-        align = "center"
+        align = "center",
+        name = glue("Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}"),
+        show = TRUE
       )
     )
   )
+  })
+
+
+# Map section
+
+countries_mapped <- reactive({
+  participant_countries <- paste(filtered_war_data()$states_participants, collapse = ',')
+  participant_countries <- unique(as.list(strsplit(participant_countries,",")[[1]]))
+
+  countries_mapped <- map_functions$create_df_countries_locations(participant_countries)
+})
+
+
+
+
+output$world_map <- renderLeaflet({
+    leaflet(countries_mapped()) %>%
+      addTiles()%>%
+      addMarkers(label = ~ country)
+  
   })
 
 
