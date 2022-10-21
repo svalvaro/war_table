@@ -7,58 +7,60 @@ server: shiny
 ---
 
 ```{r}
-#| panel: sidebar
+#| column: body
 
-box::use(shinyWidgets[...])
-
-shiny::sliderInput(
-  "period_time",
-  "Select the period of time:",
-  min = 1823,
-  max = 2003,
-  value = c(1823, 2003)
-  )
-
-shiny::sliderInput(
-  "casualties_input",
-  "Select the total number of casualties:",
-  min = 0,
-  max = 1e4,
-  #value = c(0, 17e6),
-  value = 1500,
-  step = 1
-)
-
-# multiInput(
-#    inputId = "states_input",
-#    label = "States involved:",
-#    choices = c("Spain", "UK")#,
-#    # choiceNames = lapply(seq_along(countries),
-#    #                      function(i) tagList(tags$img(src = flags[i],
-#    #                                                   width = 20,
-#    #                                                   height = 15),
-#    #                                          countries[i])
-#    #                      ),
-#    # choiceValues = countries
-# )
-#uiOutput("country_selector")
-
-    
-
-
-```
-
-```{r}
-#| panel: fill
 box::use(
   reactable[...],
-  leaflet[...]
+  leaflet[...],
+  shinyWidgets[...]
   )
-leafletOutput("world_map")
-reactableOutput("table")
 
-
+mainPanel(
+  includeCSS("css/styles.css"),
+  
+  leafletOutput("world_map"),
+  
+  absolutePanel(top = 10, right = 10,
+    sliderInput(
+      "period_time",
+      "Select the period of time:",
+      min = 1823,
+      max = 2003,
+      value = c(1823, 2003)
+  ),
+    sliderInput(
+      "casualties_input",
+      "Select the total number of casualties:",
+      min = 0,
+      max = 2e7,
+      value = c(0, 17e6),
+      step = 1e3
+      )
+  )
+)
+# mainPanel(width = 12,
+#   includeCSS("css/styles.css"),
+#   leafletOutput("world_map"),
+#   absolutePanel(top = 10, right = 10,
+#     sliderInput(
+#       "period_time",
+#       "Select the period of time:",
+#       min = 1823,
+#       max = 2003,
+#       value = c(1823, 2003)
+#   ),
+#     sliderInput(
+#       "casualties_input",
+#       "Select the total number of casualties:",
+#       min = 0,
+#       max = 2e7,
+#       value = c(0, 17e6),
+#       step = 1e3
+#       )
+#   )
+# )
 ```
+
 
 ```{r}
 #| context: server
@@ -71,34 +73,37 @@ box::use(
   shinyWidgets[...],
   leaflet[...],
   glue[...],
-  maps[...]
+  maps[...],
+  purrr[...]
   )
 
 process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWarData_v4.0.csv")
 
-# Update the values of the states involved
-state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
-
-flags <- unlist(state_flags$country_flag)
-
-
-# output$country_selector <- renderUI({
-#   
-# })
-
-
 aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
 
 filtered_war_data <- reactive({
-  df = aggregated_war_data %>% 
-  filter(total_deaths < input$casualties_input)
-  return(df)
+  filtered_war_data <-  aggregated_war_data %>% 
+    filter(total_deaths >= input$casualties_input[1],
+           total_deaths <= input$casualties_input[2],
+           start_year >= input$period_time[1],
+           end_year <= input$period_time[2]
+           )
+  return(filtered_war_data)
+})
+
+filtered_by_country <- reactive({
+    if (!is.null(selected_state())) {
+    filtered_war_data() %>% 
+      filter(grepl(selected_state(), states_participants))
+  }
 })
 
 output$table <- renderReactable({
+  if (is.null(filtered_by_country())) return(NULL)
   reactable(
-    filtered_war_data(),
+    filtered_by_country(),
     defaultColDef = colDef(show = FALSE),
+    height = 1500,
     columns = list(
       war_details = colDef(
         html = TRUE,
@@ -123,6 +128,8 @@ output$table <- renderReactable({
   })
 
 
+# Flags of the states
+state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
 # Map section
 
 countries_mapped <- reactive({
@@ -130,17 +137,55 @@ countries_mapped <- reactive({
   participant_countries <- unique(as.list(strsplit(participant_countries,",")[[1]]))
 
   countries_mapped <- map_functions$create_df_countries_locations(participant_countries)
+  
+  countries_mapped_flags = merge(countries_mapped, state_flags, by.x = "country", by.y = "StateName")
+})
+
+output$world_map <- renderLeaflet({
+
+    map_plot <- leaflet(countries_mapped()) %>%
+      #addProviderTiles("Thunderforest.Outdoors")
+      addProviderTiles("CartoDB.Positron")
+    # addTiles("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}")
+  
+  if (nrow(countries_mapped()) > 0) {
+    
+    suppressMessages(
+      map_plot <- map_plot  %>%
+        addMarkers(
+          label = ~ country,
+          layerId = ~ country,
+          icon = list(iconUrl = ~ country_flag, iconSize = c(20,20))
+          )
+      )
+  }
+  return(map_plot)
+  })
+
+selected_state <- reactiveVal(NULL)
+
+observeEvent(input$world_map_marker_click,{
+  if (is.null(input$world_map_marker_click)) return(NULL)
+  selected_state(input$world_map_marker_click$id)
 })
 
 
+# Modal Dialog
 
-
-output$world_map <- renderLeaflet({
-    leaflet(countries_mapped()) %>%
-      addTiles()%>%
-      addMarkers(label = ~ country)
+observeEvent(input$world_map_marker_click, {
   
-  })
+  flag_selected_country = countries_mapped()$country_flag[countries_mapped()$country == selected_state()]
+  print(flag_selected_country)
+  
+      showModal(modalDialog(
+        title = HTML(glue(
+          "Wars that <img src='{flag_selected_country}' height='20'> {selected_state()} has participated."
+          )),
+        reactableOutput("table"),
+        easyClose = TRUE
+      ),)
+    })
+
 
 
 ```

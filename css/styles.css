@@ -1,0 +1,16 @@
+.modal-dialog {
+  max-width: 900px;
+}
+
+.modal {
+  height: 800px !important;
+}
+
+html, body {
+  width:100%  !important; 
+  height:100% !important;
+}
+
+#world_map {
+  height: 1200px !important;
+}
