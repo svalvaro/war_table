@@ -1,0 +1,37 @@
+box::use(
+  reactable[...],
+  glue[...]
+  )
+
+#' Creates the table inside the modals
+#' @export
+generate_war_table <- function(war_df) {
+  reactable(
+    war_df,
+    defaultColDef = colDef(show = FALSE),
+    #pagination = TRUE,
+    height = "1200px",
+    
+    columns = list(
+      war_details = colDef(
+        html = TRUE,
+        align = "center",
+        name = "<div class = 'warFont tableHeader'>War</div>",
+        show = TRUE,
+        vAlign = "center"
+      ),
+      initiators = colDef(
+        html = TRUE,
+        align = "center",
+        name = glue("<div class = 'warFont tableHeader'>Initiators {htmltools::img(src = 'images/initiators.jpg', style = 'height: 24px;')}</div>"),
+        show = TRUE
+      ),
+      defenders = colDef(
+        html = TRUE,
+        align = "center",
+        name = glue("<div class = 'warFont tableHeader'> Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}</div>"),
+        show = TRUE
+      )
+    )
+  )
+}

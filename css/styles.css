@@ -1,16 +1,165 @@
-.modal-dialog {
-  max-width: 900px;
+@font-face {
+  font-family: ProgessFont;
+  src: url('www/fonts/ProgressPersonalUse-EaJdz.ttf');
 }
 
-.modal {
-  height: 800px !important;
+@font-face {
+  font-family: grenade;
+  src: url('www/fonts/GrenadeStencilRegular-XYn9.ttf');
 }
 
-html, body {
-  width:100%  !important; 
-  height:100% !important;
+.warFont {
+  font-family: 'ProgessFont' !important;
+}
+
+h1,
+.warName,
+.stateName {
+  font-family: 'ProgessFont' !important;
+}
+
+.numbersStyling {
+  font-family: 'grenade' !important;
+  font-size: 40px !important;
+}
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #world_map {
-  height: 1200px !important;
+  height: 2000px !important;
+}
+
+/* Filter Panel */
+.filterPanel {
+  background-color: hsla(246.7, 7.1%, 50.6%, 0.44) !important;
+  top: 40%;
+  right: 10%;
+}
+
+.irs-from,
+.irs-to {
+  font-size: 18px !important;
+  top: -10px !important;
+}
+
+.irs-grid,
+.irs-min,
+.irs-max {
+  display: none !important;
+}
+
+.irs-from, .irs-to {
+  font-family: 'grenade' !important;
+  font-size: 30px !important;
+  color: #000 !important;
+  background-color: #f4f5ff91 !important;
+}
+
+.irs-bar {
+  border-top: 1px solid #b2bec8 !important;
+  border-bottom: 1px solid #b2bec8 !important;
+  background: #040404 !important;
+}
+
+.irs {
+  padding-left: 40px;
+  padding-bottom: 100px;
+  padding-right: 40px;
+}
+
+#casualtiesSlider .irs-handle {
+  background-image: url("images/skull.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 53px 48px !important;
+  width: 53px !important;
+  height: 48px !important;
+  border: 0px !important;
+  background-color: #fff0 !important;
+}
+
+/* Modal */
+.shiny-modal {
+  max-width: 1700px !important;
+  /* max-height: 1700px !important; */
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 10% !important;
+  bottom: 0 !important;
+  margin: auto !important;
+}
+.modal-dialog {
+  max-width: 1700px !important;
+  /* max-height: 1700px !important; */
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 10% !important;
+  bottom: 0 !important;
+  margin: auto !important;
+}
+
+.modal-content {
+  background-image: url("https://img.freepik.com/premium-photo/old-paper-texture-background_118047-1365.jpg?w=2000");
+  /* max-height: 1300px !important; */
+}
+
+/* Reactable table*/
+
+.rt-td {
+  border-top: 70px solid !important;
+  border-image: url("images/wire.png") 100 !important;
+}
+
+h2 {
+  border-bottom: 0px !important;
+}
+
+.Reactable {
+  background-color: rgba(255, 255, 255, 0) !important;
+}
+
+.tableHeader {
+  font-size: 30px !important;
+}
+
+/* Scroll down inside modal*/
+
+scroll-downs {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width :34px;
+  height: 55px;
+}
+.mousey {
+  width: 3px;
+  padding: 10px 15px;
+  height: 35px;
+  border: 2px solid #000;
+  border-radius: 25px;
+  opacity: 0.75;
+  box-sizing: content-box;
+}
+.scroller {
+  width: 3px;
+  height: 10px;
+  border-radius: 25%;
+  background-color: #000;
+  animation-name: scroll;
+  animation-duration: 2.2s;
+  animation-timing-function: cubic-bezier(.15,.41,.69,.94);
+  animation-iteration-count: infinite;
+}
+@keyframes scroll {
+  0% { opacity: 0; }
+  10% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(15px); opacity: 0;}
 }

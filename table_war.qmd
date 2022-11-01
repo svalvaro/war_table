@@ -1,5 +1,5 @@
 ---
-title: "World of Wars"
+title: "A hostile world"
 format: 
   html:
     page-layout: custom
@@ -12,53 +12,34 @@ server: shiny
 box::use(
   reactable[...],
   leaflet[...],
-  shinyWidgets[...]
+  shinyWidgets[...],
+  htmltools[...]
   )
 
 mainPanel(
-  includeCSS("css/styles.css"),
+ 
   
   leafletOutput("world_map"),
   
-  absolutePanel(top = 10, right = 10,
+  absolutePanel(class = "filterPanel",
     sliderInput(
       "period_time",
-      "Select the period of time:",
+      h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
       min = 1823,
       max = 2003,
-      value = c(1823, 2003)
+      value = c(1823, 2003),
   ),
-    sliderInput(
-      "casualties_input",
-      "Select the total number of casualties:",
-      min = 0,
-      max = 2e7,
-      value = c(0, 17e6),
-      step = 1e3
-      )
-  )
+
+    sliderTextInput(
+      inputId = "casualties_input",
+      h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
+      choices = c("1 K", "10 K", "100 K", "1 M", "5 M", "10 M", "20 M"),
+      selected = c("1 K", "20 M"),
+      grid = FALSE
+      ) %>% tagAppendAttributes(id = "casualtiesSlider")
+  ),
+   includeCSS("css/styles.css")
 )
-# mainPanel(width = 12,
-#   includeCSS("css/styles.css"),
-#   leafletOutput("world_map"),
-#   absolutePanel(top = 10, right = 10,
-#     sliderInput(
-#       "period_time",
-#       "Select the period of time:",
-#       min = 1823,
-#       max = 2003,
-#       value = c(1823, 2003)
-#   ),
-#     sliderInput(
-#       "casualties_input",
-#       "Select the total number of casualties:",
-#       min = 0,
-#       max = 2e7,
-#       value = c(0, 17e6),
-#       step = 1e3
-#       )
-#   )
-# )
 ```
 
 
@@ -67,6 +48,7 @@ mainPanel(
 box::use(
   R/data_processing,
   R/map_functions,
+  R/table_modal,
   reactable[...],
   htmltools[...],
   dplyr[...],
@@ -82,9 +64,12 @@ process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWa
 aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
 
 filtered_war_data <- reactive({
+  total_deaths_min <- data_processing$readable_to_numeric_casualties(input$casualties_input[1])
+  total_deaths_max <- data_processing$readable_to_numeric_casualties(input$casualties_input[2])
+  
   filtered_war_data <-  aggregated_war_data %>% 
-    filter(total_deaths >= input$casualties_input[1],
-           total_deaths <= input$casualties_input[2],
+    filter(total_deaths >= total_deaths_min,
+           total_deaths <= total_deaths_max,
            start_year >= input$period_time[1],
            end_year <= input$period_time[2]
            )
@@ -100,33 +85,9 @@ filtered_by_country <- reactive({
 
 output$table <- renderReactable({
   if (is.null(filtered_by_country())) return(NULL)
-  reactable(
-    filtered_by_country(),
-    defaultColDef = colDef(show = FALSE),
-    height = 1500,
-    columns = list(
-      war_details = colDef(
-        html = TRUE,
-        align = "center",
-        name = "War",
-        show = TRUE
-      ),
-      initiators = colDef(
-        html = TRUE,
-        align = "center",
-        name = glue("Initiators {htmltools::img(src = 'images/initiators.jpg', style = 'height: 24px;')}"),
-        show = TRUE
-        ),
-      defenders = colDef(
-        html = TRUE,
-        align = "center",
-        name = glue("Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}"),
-        show = TRUE
-      )
-    )
-  )
+  table_modal$generate_war_table(filtered_by_country())
+  # table_modal$generate_war_table(aggregated_war_data)
   })
-
 
 # Flags of the states
 state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
@@ -155,7 +116,7 @@ output$world_map <- renderLeaflet({
         addMarkers(
           label = ~ country,
           layerId = ~ country,
-          icon = list(iconUrl = ~ country_flag, iconSize = c(20,20))
+          icon = list(iconUrl = ~ country_flag, iconSize = c(35,35))
           )
       )
   }
@@ -175,15 +136,24 @@ observeEvent(input$world_map_marker_click,{
 observeEvent(input$world_map_marker_click, {
   
   flag_selected_country = countries_mapped()$country_flag[countries_mapped()$country == selected_state()]
-  print(flag_selected_country)
   
       showModal(modalDialog(
         title = HTML(glue(
-          "Wars that <img src='{flag_selected_country}' height='20'> {selected_state()} has participated."
+          "<div class = 'stateName'> Wars that <img src='{flag_selected_country}' height='25'> {selected_state()} has participated.</div>"
           )),
+        HTML(
+          '
+          <div class="scroll-downs">
+            <div class="mousey">
+              <div class="scroller"></div>
+            </div>
+          </div>
+          '
+        ),
         reactableOutput("table"),
+        
         easyClose = TRUE
-      ),)
+      )) 
     })
 
 

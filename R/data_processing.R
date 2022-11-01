@@ -22,7 +22,7 @@ process_raw_war_data <- function(data_dir) {
     )
   table_wars$country_flag <- lapply(table_wars$StateName,add_country_flags, countries_df = countries_df)
   
-  table_wars$StateNameShow <- glue("<img src='{table_wars$country_flag}' height='20'> {table_wars$StateName}")
+  table_wars$StateNameShow <- glue("<div class='stateName'><img src='{table_wars$country_flag}' height='20'> {table_wars$StateName}</div>")
   table_wars$BatDeath <- as.numeric(lapply(X = table_wars$BatDeath, round_casualties))
   
   columns_to_keep <- c("WarName", "Side", "StateName","country_flag","StateNameShow",  "StartYear1", "EndYear1", "EndYear2",
@@ -33,6 +33,7 @@ process_raw_war_data <- function(data_dir) {
     group_by(WarName) %>%
     mutate(
       WarName = ifelse(grepl("War", WarName), WarName, glue("{WarName} War")),
+      WarName = gsub("Phase 2", "Phase II", WarName),
       start_year = min(StartYear1),
       end_year = max(c(EndYear1, EndYear2)),
       BatDeath = ifelse(BatDeath == -9, NA, BatDeath),
@@ -53,15 +54,19 @@ process_raw_war_data <- function(data_dir) {
     group_by(WarName) %>% 
     mutate(
       war_details = glue(
-      "<div class = 'warName' style='font-size: 20px;'>{WarName}<br>
-      <div class = 'periodTime'>{htmltools::img(src = 'images/calendar.jpg', style = 'height: 24px;')} {start_year}-{end_year}</div><br>
-      <div class = 'casualties'>{readable_total_deaths} {htmltools::img(src = 'images/skull.jpg', style = 'height: 24px;')}</div>"
+      "<div class = 'warName' style='font-size: 45px;'>{WarName}<br></div>
+      <div class='numbersStyling'>{start_year} - {end_year}</div><br>
+      <div class = 'numbersStyling'>{readable_total_deaths} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div>"
       ),
-      country_details = glue("{StateNameShow}  <div class = 'casualties'> {readableBatDeath} {htmltools::img(src = 'images/skull.jpg', style = 'height: 24px;')}</div><br>"),
+      country_details = glue("{StateNameShow}  <div class = 'numbersStyling'> {readableBatDeath} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div><br>"),
       Initiator = ifelse(Initiator == 1, TRUE, FALSE)) %>%
     ungroup() %>%
     arrange(desc(total_deaths)) %>% 
     select(-c("EndYear1", "EndYear2"))
+  
+  # There was a war name with a typo in the database IfniWar
+  table_wars$WarName <- gsub("IfniWar","Ifni War", table_wars$WarName)
+  return(table_wars)
 }
 
 #' @export
@@ -100,39 +105,38 @@ aggregate_war_data <- function(table_wars) {
       mutate(
         initiators =  gsub(
           "Outcome: 1",
-          htmltools::img(src = 'images/war_winner.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/war_winner.png', style = 'height: 55px;'),
           initiators
         ),
         initiators =  gsub(
           "Outcome: 2",
-          htmltools::img(src = 'images/war_defeated.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/war_defeated.png', style = 'height: 55px;'),
           initiators
         ),
         initiators =  gsub(
           "Outcome: 6",
-          htmltools::img(src = 'images/stalemate.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
           initiators
         ),
         defenders =  gsub(
           "Outcome: 6",
-          htmltools::img(src = 'images/stalemate.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
           defenders
         ),
         defenders =  gsub(
           "Outcome: 1",
-          htmltools::img(src = 'images/war_winner.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/war_winner.png', style = 'height: 55px;'),
           defenders
         ),
         defenders =  gsub(
           "Outcome: 2",
-          htmltools::img(src = 'images/war_defeated.png', style = 'height: 45px;'),
+          htmltools::img(src = 'images/war_defeated.png', style = 'height: 55px;'),
           defenders
         )
       ) %>%
       ungroup()
     
 }
-
 
 #' #' @export
 #' outcome_image_creator <- function(text){
@@ -164,7 +168,6 @@ aggregate_war_data <- function(table_wars) {
 #' @export
 add_country_flags <- function(country,countries_df) {
 
-  
   country_code <- countries_df$`alpha-2`[countries_df$name == country]
   
   if (length(country_code)== 0) country_code <- "xx"
@@ -242,9 +245,13 @@ round_casualties <- function(casualties) {
 readable_casualties <- function(casualties) {
   case_when(
     casualties < 1e3 ~ as.character(casualties),
-    casualties < 1e6 ~ paste0(as.character(round(casualties/1e3, digits = 1)), "K"),
-    casualties < 1e9 ~ paste0(as.character(round(casualties/1e6, digits = 1)), "M")
+    casualties < 1e6 ~ paste0(as.character(round(casualties/1e3, digits = 1)), " K"),
+    casualties < 1e9 ~ paste0(as.character(round(casualties/1e6, digits = 1))," M")
     )
 }
 
-
+#' @export
+readable_to_numeric_casualties <- function(casualties) {
+  if (endsWith(casualties, "K")) return(as.numeric(gsub(" K", "", casualties)) * 1e3)
+  if (endsWith(casualties, "M")) return(as.integer(gsub(" M", "", casualties)) *  1e6)
+}
