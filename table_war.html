@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>World of Wars</title>
+<title>A hostile world</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -38,7 +38,7 @@ ul.task-list{list-style: none;}
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">World of Wars</h1>
+<h1 class="title">A hostile world</h1>
 </div>
 
 
@@ -54,34 +54,193 @@ ul.task-list{list-style: none;}
 
 <div class="cell">
 <div class="cell-output-display column-body">
+
 <div class="col-sm-8" role="main">
-<style type="text/css">.modal-dialog {
-  max-width: 900px;
+<div id="world_map" style="width:100%; height:400px; " class="leaflet html-widget html-widget-output"></div>
+<div style="position:absolute;cursor:inherit;" class="filterPanel">
+<div class="form-group shiny-input-container">
+<label class="control-label" id="period_time-label" for="period_time">
+<h2 class="warFont">Time Period:</h2>
+</label>
+<input class="js-range-slider" id="period_time" data-skin="shiny" data-type="double" data-min="1823" data-max="2003" data-from="1823" data-to="2003" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-drag-interval="true" data-data-type="number">
+</div>
+<div class="form-group shiny-input-container" id="casualtiesSlider">
+<label class="control-label" for="casualties_input">
+<h2 class="warFont">Total Casualties:</h2>
+</label>
+<input class="js-range-slider sw-slider-text" data-data-type="text" data-drag-interval="true" data-force-edges="false" data-from="0" data-from-fixed="false" data-from-shadow="false" data-grid="false" data-hide-min-max="false" data-keyboard="true" data-prettify-enabled="false" data-skin="shiny" data-swvalues="[&quot;1 K&quot;,&quot;10 K&quot;,&quot;100 K&quot;,&quot;1 M&quot;,&quot;5 M&quot;,&quot;10 M&quot;,&quot;20 M&quot;]" data-to="6" data-to-fixed="false" data-to-shadow="false" data-type="double" id="casualties_input">
+</div>
+</div>
+<style type="text/css">@font-face {
+  font-family: ProgessFont;
+  src: url('www/fonts/ProgressPersonalUse-EaJdz.ttf');
 }
 
-.modal {
-  height: 800px !important;
+@font-face {
+  font-family: grenade;
+  src: url('www/fonts/GrenadeStencilRegular-XYn9.ttf');
 }
 
-html, body {
-  width:100%  !important; 
-  height:100% !important;
+.warFont {
+  font-family: 'ProgessFont' !important;
+}
+
+h1,
+.warName,
+.stateName {
+  font-family: 'ProgessFont' !important;
+}
+
+.numbersStyling {
+  font-family: 'grenade' !important;
+  font-size: 40px !important;
+}
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #world_map {
-  height: 1200px !important;
+  height: 2000px !important;
+}
+
+/* Filter Panel */
+.filterPanel {
+  background-color: hsla(246.7, 7.1%, 50.6%, 0.44) !important;
+  top: 40%;
+  right: 10%;
+}
+
+.irs-from,
+.irs-to {
+  font-size: 18px !important;
+  top: -10px !important;
+}
+
+.irs-grid,
+.irs-min,
+.irs-max {
+  display: none !important;
+}
+
+.irs-from, .irs-to {
+  font-family: 'grenade' !important;
+  font-size: 30px !important;
+  color: #000 !important;
+  background-color: #f4f5ff91 !important;
+}
+
+.irs-bar {
+  border-top: 1px solid #b2bec8 !important;
+  border-bottom: 1px solid #b2bec8 !important;
+  background: #040404 !important;
+}
+
+.irs {
+  padding-left: 40px;
+  padding-bottom: 100px;
+  padding-right: 40px;
+}
+
+#casualtiesSlider .irs-handle {
+  background-image: url("images/skull.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 53px 48px !important;
+  width: 53px !important;
+  height: 48px !important;
+  border: 0px !important;
+  background-color: #fff0 !important;
+}
+
+/* Modal */
+.shiny-modal {
+  max-width: 1700px !important;
+  /*max-height: 800px !important; */
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 10% !important;
+  bottom: 0 !important;
+  margin: auto !important;
+}
+.modal-dialog {
+  max-width: 1700px !important;
+  /* max-height: 800px !important;  */
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 10% !important;
+  bottom: 0 !important;
+  margin: auto !important;
+}
+
+.modal-content {
+  background-image: url("https://img.freepik.com/premium-photo/old-paper-texture-background_118047-1365.jpg?w=2000");
+  /* max-height: 1300px !important; */
+}
+
+/* Reactable table*/
+.rt-table {
+  /* overflow-y: hidden !important; */
+}
+
+.rt-td {
+  border-top: 70px solid !important;
+  border-image: url("images/wire.png") 100 !important;
+}
+
+h2 {
+  border-bottom: 0px !important;
+}
+
+.Reactable {
+  background-color: rgba(255, 255, 255, 0) !important;
+}
+
+.tableHeader {
+  font-size: 30px !important;
+}
+
+.fontStateTable {
+  font-size: 30px !important;
+}
+
+/* Scroll down inside modal*/
+
+.scroll-downs {
+  position: absolute;
+  top: 95%;
+  right: 50%;
+  margin: auto;
+  width :34px;
+  height: 55px;
+}
+.mousey {
+  width: 3px;
+  padding: 10px 15px;
+  height: 35px;
+  border: 2px solid #000;
+  border-radius: 25px;
+  opacity: 0.75;
+  box-sizing: content-box;
+}
+.scroller {
+  width: 3px;
+  height: 10px;
+  border-radius: 25%;
+  background-color: #000;
+  animation-name: scroll;
+  animation-duration: 2.2s;
+  animation-timing-function: cubic-bezier(.15,.41,.69,.94);
+  animation-iteration-count: infinite;
+}
+@keyframes scroll {
+  0% { opacity: 0; }
+  10% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(15px); opacity: 0;}
 }</style>
-<div id="world_map" style="width:100%; height:400px; " class="leaflet html-widget html-widget-output"></div>
-<div style="top:10px;right:10px;position:absolute;cursor:inherit;">
-<div class="form-group shiny-input-container">
-<label class="control-label" id="period_time-label" for="period_time">Select the period of time:</label>
-<input class="js-range-slider" id="period_time" data-skin="shiny" data-type="double" data-min="1823" data-max="2003" data-from="1823" data-to="2003" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-drag-interval="true" data-data-type="number">
-</div>
-<div class="form-group shiny-input-container">
-<label class="control-label" id="casualties_input-label" for="casualties_input">Select the total number of casualties:</label>
-<input class="js-range-slider" id="casualties_input" data-skin="shiny" data-type="double" data-min="0" data-max="20000000" data-from="0" data-to="17000000" data-step="1000" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-drag-interval="true" data-data-type="number">
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -93,6 +252,7 @@ html, body {
 box::use(
   R/data_processing,
   R/map_functions,
+  R/table_modal,
   reactable[...],
   htmltools[...],
   dplyr[...],
@@ -108,9 +268,12 @@ process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWa
 aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
 
 filtered_war_data <- reactive({
+  total_deaths_min <- data_processing$readable_to_numeric_casualties(input$casualties_input[1])
+  total_deaths_max <- data_processing$readable_to_numeric_casualties(input$casualties_input[2])
+  
   filtered_war_data <-  aggregated_war_data %>% 
-    filter(total_deaths >= input$casualties_input[1],
-           total_deaths <= input$casualties_input[2],
+    filter(total_deaths >= total_deaths_min,
+           total_deaths <= total_deaths_max,
            start_year >= input$period_time[1],
            end_year <= input$period_time[2]
            )
@@ -126,33 +289,9 @@ filtered_by_country <- reactive({
 
 output$table <- renderReactable({
   if (is.null(filtered_by_country())) return(NULL)
-  reactable(
-    filtered_by_country(),
-    defaultColDef = colDef(show = FALSE),
-    height = 1500,
-    columns = list(
-      war_details = colDef(
-        html = TRUE,
-        align = "center",
-        name = "War",
-        show = TRUE
-      ),
-      initiators = colDef(
-        html = TRUE,
-        align = "center",
-        name = glue("Initiators {htmltools::img(src = 'images/initiators.jpg', style = 'height: 24px;')}"),
-        show = TRUE
-        ),
-      defenders = colDef(
-        html = TRUE,
-        align = "center",
-        name = glue("Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}"),
-        show = TRUE
-      )
-    )
-  )
+  table_modal$generate_war_table(filtered_by_country())
+  # table_modal$generate_war_table(aggregated_war_data)
   })
-
 
 # Flags of the states
 state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
@@ -181,7 +320,7 @@ output$world_map <- renderLeaflet({
         addMarkers(
           label = ~ country,
           layerId = ~ country,
-          icon = list(iconUrl = ~ country_flag, iconSize = c(20,20))
+          icon = list(iconUrl = ~ country_flag, iconSize = c(35,35))
           )
       )
   }
@@ -201,15 +340,24 @@ observeEvent(input$world_map_marker_click,{
 observeEvent(input$world_map_marker_click, {
   
   flag_selected_country = countries_mapped()$country_flag[countries_mapped()$country == selected_state()]
-  print(flag_selected_country)
   
       showModal(modalDialog(
         title = HTML(glue(
-          "Wars that <img src='{flag_selected_country}' height='20'> {selected_state()} has participated."
+          "<div class = 'stateName'> Wars that <img src='{flag_selected_country}' height='25'> {selected_state()} has participated.<\u002fdiv>"
           )),
+        HTML(
+          '
+          <div class="scroll-downs">
+            <div class="mousey">
+              <div class="scroller"><\u002fdiv>
+            <\u002fdiv>
+          <\u002fdiv>
+          '
+        ),
         reactableOutput("table"),
+        
         easyClose = TRUE
-      ),)
+      )) 
     })
 
 
@@ -245,7 +393,7 @@ ojs_define <- function(..., .session = shiny::getDefaultReactiveDomain()) {
 </p>
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="dependencies">
-{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.5.4"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.5.4"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.12.4"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/jquery"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leaflet"]},{"type":"character","attributes":{},"value":["1.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet.js"]},{"type":"character","attributes":{},"value":["leaflet.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leafletfix"]},{"type":"character","attributes":{},"value":["1.0.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/leafletfix"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leafletfix.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["proj4"]},{"type":"character","attributes":{},"value":["2.6.2"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/plugins/Proj4Leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["proj4.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["Proj4Leaflet"]},{"type":"character","attributes":{},"value":["1.0.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/plugins/Proj4Leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["proj4leaflet.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["rstudio_leaflet"]},{"type":"character","attributes":{},"value":["1.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/rstudio_leaflet"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rstudio_leaflet.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leaflet-binding"]},{"type":"character","attributes":{},"value":["2.1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ionrangeslider-javascript"]},{"type":"character","attributes":{},"value":["2.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/ionrangeslider"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/ion.rangeSlider.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["strftime"]},{"type":"character","attributes":{},"value":["0.9.2"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/strftime"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["strftime-min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ionrangeslider-css"]},{"type":"character","attributes":{},"value":["2.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/ionrangeslider"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["css/ion.rangeSlider.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]}]}
+{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"character","attributes":{},"value":["1.5.4"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["htmlwidgets"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.5.4"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["jquery"]},{"type":"character","attributes":{},"value":["1.12.4"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/jquery"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["jquery.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leaflet"]},{"type":"character","attributes":{},"value":["1.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet.js"]},{"type":"character","attributes":{},"value":["leaflet.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leafletfix"]},{"type":"character","attributes":{},"value":["1.0.0"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/leafletfix"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leafletfix.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["proj4"]},{"type":"character","attributes":{},"value":["2.6.2"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/plugins/Proj4Leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["proj4.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["Proj4Leaflet"]},{"type":"character","attributes":{},"value":["1.0.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/plugins/Proj4Leaflet"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["proj4leaflet.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["rstudio_leaflet"]},{"type":"character","attributes":{},"value":["1.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets/lib/rstudio_leaflet"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["rstudio_leaflet.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["leaflet-binding"]},{"type":"character","attributes":{},"value":["2.1.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["htmlwidgets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["leaflet"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["2.1.1"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ionrangeslider-javascript"]},{"type":"character","attributes":{},"value":["2.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/ionrangeslider"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["js/ion.rangeSlider.min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["strftime"]},{"type":"character","attributes":{},"value":["0.9.2"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/strftime"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["strftime-min.js"]},{"type":"NULL"},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["ionrangeslider-css"]},{"type":"character","attributes":{},"value":["2.3.1"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["file"]}},"value":[{"type":"character","attributes":{},"value":["www/shared/ionrangeslider"]}]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["css/ion.rangeSlider.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shiny"]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["1.7.2"]}]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","version","src","meta","script","stylesheet","head","attachment","package","all_files","pkgVersion"]},"class":{"type":"character","attributes":{},"value":["html_dependency"]}},"value":[{"type":"character","attributes":{},"value":["shinyWidgets"]},{"type":"character","attributes":{},"value":["0.7.4"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["href","file"]}},"value":[{"type":"character","attributes":{},"value":["shinyWidgets"]},{"type":"character","attributes":{},"value":["assets"]}]},{"type":"NULL"},{"type":"character","attributes":{},"value":["shinyWidgets-bindings.min.js"]},{"type":"character","attributes":{},"value":["shinyWidgets.min.css"]},{"type":"NULL"},{"type":"NULL"},{"type":"character","attributes":{},"value":["shinyWidgets"]},{"type":"logical","attributes":{},"value":[false]},{"type":"character","attributes":{},"value":["0.7.4"]}]}]}
 </script>
 <!--/html_preserve-->
 <!--html_preserve-->

@@ -22,7 +22,7 @@ process_raw_war_data <- function(data_dir) {
     )
   table_wars$country_flag <- lapply(table_wars$StateName,add_country_flags, countries_df = countries_df)
   
-  table_wars$StateNameShow <- glue("<div class='stateName'><img src='{table_wars$country_flag}' height='20'> {table_wars$StateName}</div>")
+  table_wars$StateNameShow <- glue("<span class='stateName fontStateTable'><img src='{table_wars$country_flag}' height='25'> {table_wars$StateName}</span>")
   table_wars$BatDeath <- as.numeric(lapply(X = table_wars$BatDeath, round_casualties))
   
   columns_to_keep <- c("WarName", "Side", "StateName","country_flag","StateNameShow",  "StartYear1", "EndYear1", "EndYear2",
@@ -40,7 +40,7 @@ process_raw_war_data <- function(data_dir) {
       total_deaths = sum(BatDeath, na.rm = TRUE),
       StateNameShow = ifelse(
         Initiator == 1,
-        glue("{StateNameShow}  {htmltools::img(src = 'images/sword.png', style = 'height: 24px;')}"),
+        glue("{htmltools::img(src = 'images/sword.png', style = 'height: 24px;')} {StateNameShow} "),
         StateNameShow
         ),
       states_participants = paste0(StateName, collapse = ',') 
@@ -58,7 +58,7 @@ process_raw_war_data <- function(data_dir) {
       <div class='numbersStyling'>{start_year} - {end_year}</div><br>
       <div class = 'numbersStyling'>{readable_total_deaths} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div>"
       ),
-      country_details = glue("{StateNameShow}  <div class = 'numbersStyling'> {readableBatDeath} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div><br>"),
+      country_details = glue("{StateNameShow} ... {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')} <span class = 'numbersStyling'>{readableBatDeath}</span><br>"),
       Initiator = ifelse(Initiator == 1, TRUE, FALSE)) %>%
     ungroup() %>%
     arrange(desc(total_deaths)) %>% 

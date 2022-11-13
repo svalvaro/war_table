@@ -84,7 +84,7 @@ body {
 /* Modal */
 .shiny-modal {
   max-width: 1700px !important;
-  /* max-height: 1700px !important; */
+  /*max-height: 800px !important; */
   position: absolute !important;
   left: 0 !important;
   right: 0 !important;
@@ -94,7 +94,7 @@ body {
 }
 .modal-dialog {
   max-width: 1700px !important;
-  /* max-height: 1700px !important; */
+  /* max-height: 800px !important;  */
   position: absolute !important;
   left: 0 !important;
   right: 0 !important;
@@ -109,6 +109,9 @@ body {
 }
 
 /* Reactable table*/
+.rt-table {
+  /* overflow-y: hidden !important; */
+}
 
 .rt-td {
   border-top: 70px solid !important;
@@ -127,14 +130,16 @@ h2 {
   font-size: 30px !important;
 }
 
+.fontStateTable {
+  font-size: 30px !important;
+}
+
 /* Scroll down inside modal*/
 
-scroll-downs {
+.scroll-downs {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  top: 95%;
+  right: 50%;
   margin: auto;
   width :34px;
   height: 55px;

@@ -18,7 +18,6 @@ box::use(
 
 mainPanel(
  
-  
   leafletOutput("world_map"),
   
   absolutePanel(class = "filterPanel",

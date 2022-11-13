@@ -9,8 +9,8 @@ generate_war_table <- function(war_df) {
   reactable(
     war_df,
     defaultColDef = colDef(show = FALSE),
-    #pagination = TRUE,
-    height = "1200px",
+    #pagination = FALSE,
+    height = "800px",
     
     columns = list(
       war_details = colDef(
@@ -29,7 +29,7 @@ generate_war_table <- function(war_df) {
       defenders = colDef(
         html = TRUE,
         align = "center",
-        name = glue("<div class = 'warFont tableHeader'> Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}</div>"),
+        name = glue("<div class = 'warFont tableHeader'>Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}</div>"),
         show = TRUE
       )
     )
