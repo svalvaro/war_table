@@ -1,6 +1,7 @@
 box::use(
   maps[...],
-  dplyr[...]
+  dplyr[...],
+  leaflet[...]
 )
 #' It maps the countries to the map, manually adds location of states that couldn't be mapped 
 #' programatically.
@@ -43,6 +44,32 @@ create_df_countries_locations <- function(participant_countries){
       longitude = replace(longitude, country == "Italy", 13.4)) %>%  # Separate from vatican city
     filter(country %in% participant_countries) %>% 
     filter(!(country == "Cyprus"  & latitude == 35.16)) # Removed one duplicate from Cyprus
-
-   
 }
+
+#' @export
+
+create_list_maps <- function(war_df, countries_mapped_flags) {
+  map_list <- list()
+  
+  for (ii in seq_len(nrow(war_df))) {
+    states_each_war <- strsplit(war_df$states_participants[ii],",")[[1]]
+    filtered_countries_info <- 
+      countries_mapped_flags %>% 
+      filter( country %in% states_each_war)
+
+    map_each  <- leaflet(filtered_countries_info) %>%
+      addProviderTiles("CartoDB.Positron") %>%
+      addMarkers(
+        label = ~ country,
+        layerId = ~ country,
+        icon = list(iconUrl = ~ country_flag, iconSize = c(35,35))
+        )
+
+    map_list[[length(map_list) + 1 ]] <- map_each
+    names(map_list)[length(map_list)] <-  war_df$WarName[ii]
+  }
+  
+  map_list
+}
+
+
