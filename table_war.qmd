@@ -1,13 +1,12 @@
 ---
 title: "A hostile world"
 format: 
-  html:
-    page-layout: custom
+  html
 server: shiny
 ---
 
 ```{r}
-#| column: body
+#| panel: fill
 
 box::use(
   reactable[...],
@@ -16,29 +15,53 @@ box::use(
   htmltools[...]
   )
 
-mainPanel(
- 
+shiny::fluidPage(
   
-  leafletOutput("world_map"),
-  
-  absolutePanel(class = "filterPanel",
-    sliderInput(
-      "period_time",
-      h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
-      min = 1823,
-      max = 2003,
-      value = c(1823, 2003),
-  ),
-
-    sliderTextInput(
+  shiny::fluidRow(
+    shiny::column(
+      width = 6,
+       sliderInput(
+        "period_time",
+        h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
+        min = 1823,
+        max = 2003,
+        value = c(1823, 2003)
+        )
+      ),
+    shiny::column(
+      width = 6,
+      sliderTextInput(
       inputId = "casualties_input",
       h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
       choices = c("1 K", "10 K", "100 K", "1 M", "5 M", "10 M", "20 M"),
       selected = c("1 K", "20 M"),
       grid = FALSE
       ) %>% tagAppendAttributes(id = "casualtiesSlider")
+    )
   ),
-   includeCSS("css/styles.css")
+  
+  shiny::fluidRow(
+    reactableOutput("table")
+  ),
+    
+    # absolutePanel(
+    #   class = "filterPanel",
+    #   sliderInput(
+    #     "period_time",
+    #     h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
+    #     min = 1823,
+    #     max = 2003,
+    #     value = c(1823, 2003)
+    #     ),
+    # sliderTextInput(
+    #   inputId = "casualties_input",
+    #   h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
+    #   choices = c("1 K", "10 K", "100 K", "1 M", "5 M", "10 M", "20 M"),
+    #   selected = c("1 K", "20 M"),
+    #   grid = FALSE
+    #   ) %>% tagAppendAttributes(id = "casualtiesSlider")
+    # ),
+  includeCSS("css/styles.css")
 )
 ```
 
@@ -48,7 +71,7 @@ mainPanel(
 box::use(
   R/data_processing,
   R/map_functions,
-  R/table_modal,
+  R/reactable_functions,
   reactable[...],
   htmltools[...],
   dplyr[...],
@@ -63,6 +86,18 @@ process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWa
 
 aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
 
+# Maps column
+
+participant_countries <- paste(aggregated_war_data$states_participants, collapse = ',')
+participant_countries <- unique(as.list(strsplit(participant_countries,",")[[1]]))
+
+countries_mapped <- map_functions$create_df_countries_locations(participant_countries)
+state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
+
+countries_mapped_flags = merge(countries_mapped, state_flags, by.x = "country", by.y = "StateName")
+
+map_list <- suppressMessages(map_functions$create_list_maps(aggregated_war_data, countries_mapped_flags))
+
 filtered_war_data <- reactive({
   total_deaths_min <- data_processing$readable_to_numeric_casualties(input$casualties_input[1])
   total_deaths_max <- data_processing$readable_to_numeric_casualties(input$casualties_input[2])
@@ -76,86 +111,8 @@ filtered_war_data <- reactive({
   return(filtered_war_data)
 })
 
-filtered_by_country <- reactive({
-    if (!is.null(selected_state())) {
-    filtered_war_data() %>% 
-      filter(grepl(selected_state(), states_participants))
-  }
-})
-
 output$table <- renderReactable({
-  if (is.null(filtered_by_country())) return(NULL)
-  table_modal$generate_war_table(filtered_by_country())
-  # table_modal$generate_war_table(aggregated_war_data)
+  
+  reactable_functions$generate_war_table(filtered_war_data(), map_list)
   })
-
-# Flags of the states
-state_flags <- process_raw_war_data %>% select(c("StateName","country_flag")) %>% distinct()
-# Map section
-
-countries_mapped <- reactive({
-  participant_countries <- paste(filtered_war_data()$states_participants, collapse = ',')
-  participant_countries <- unique(as.list(strsplit(participant_countries,",")[[1]]))
-
-  countries_mapped <- map_functions$create_df_countries_locations(participant_countries)
-  
-  countries_mapped_flags = merge(countries_mapped, state_flags, by.x = "country", by.y = "StateName")
-})
-
-output$world_map <- renderLeaflet({
-
-    map_plot <- leaflet(countries_mapped()) %>%
-      #addProviderTiles("Thunderforest.Outdoors")
-      addProviderTiles("CartoDB.Positron")
-    # addTiles("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}")
-  
-  if (nrow(countries_mapped()) > 0) {
-    
-    suppressMessages(
-      map_plot <- map_plot  %>%
-        addMarkers(
-          label = ~ country,
-          layerId = ~ country,
-          icon = list(iconUrl = ~ country_flag, iconSize = c(35,35))
-          )
-      )
-  }
-  return(map_plot)
-  })
-
-selected_state <- reactiveVal(NULL)
-
-observeEvent(input$world_map_marker_click,{
-  if (is.null(input$world_map_marker_click)) return(NULL)
-  selected_state(input$world_map_marker_click$id)
-})
-
-
-# Modal Dialog
-
-observeEvent(input$world_map_marker_click, {
-  
-  flag_selected_country = countries_mapped()$country_flag[countries_mapped()$country == selected_state()]
-  
-      showModal(modalDialog(
-        title = HTML(glue(
-          "<div class = 'stateName'> Wars that <img src='{flag_selected_country}' height='25'> {selected_state()} has participated.</div>"
-          )),
-        HTML(
-          '
-          <div class="scroll-downs">
-            <div class="mousey">
-              <div class="scroller"></div>
-            </div>
-          </div>
-          '
-        ),
-        reactableOutput("table"),
-        
-        easyClose = TRUE
-      )) 
-    })
-
-
-
 ```

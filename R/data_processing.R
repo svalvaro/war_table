@@ -22,7 +22,7 @@ process_raw_war_data <- function(data_dir) {
     )
   table_wars$country_flag <- lapply(table_wars$StateName,add_country_flags, countries_df = countries_df)
   
-  table_wars$StateNameShow <- glue("<div class='stateName'><img src='{table_wars$country_flag}' height='20'> {table_wars$StateName}</div>")
+  table_wars$StateNameShow <- glue("<span class='stateName fontStateTable'><img src='{table_wars$country_flag}' height='25'> {table_wars$StateName}</span>")
   table_wars$BatDeath <- as.numeric(lapply(X = table_wars$BatDeath, round_casualties))
   
   columns_to_keep <- c("WarName", "Side", "StateName","country_flag","StateNameShow",  "StartYear1", "EndYear1", "EndYear2",
@@ -40,7 +40,7 @@ process_raw_war_data <- function(data_dir) {
       total_deaths = sum(BatDeath, na.rm = TRUE),
       StateNameShow = ifelse(
         Initiator == 1,
-        glue("{StateNameShow}  {htmltools::img(src = 'images/sword.png', style = 'height: 24px;')}"),
+        glue("{htmltools::img(src = 'images/sword.png', style = 'height: 24px;')} {StateNameShow} "),
         StateNameShow
         ),
       states_participants = paste0(StateName, collapse = ',') 
@@ -58,7 +58,7 @@ process_raw_war_data <- function(data_dir) {
       <div class='numbersStyling'>{start_year} - {end_year}</div><br>
       <div class = 'numbersStyling'>{readable_total_deaths} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div>"
       ),
-      country_details = glue("{StateNameShow}  <div class = 'numbersStyling'> {readableBatDeath} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div><br>"),
+      country_details = glue("{StateNameShow} ... {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')} <span class = 'numbersStyling'>{readableBatDeath}</span><br>"),
       Initiator = ifelse(Initiator == 1, TRUE, FALSE)) %>%
     ungroup() %>%
     arrange(desc(total_deaths)) %>% 
@@ -138,32 +138,29 @@ aggregate_war_data <- function(table_wars) {
     
 }
 
-#' #' @export
-#' outcome_image_creator <- function(text){
-#'   
-#'   patterns <- c("Outcome: 1", "Outcome: 2", "Outcome: 6")
-#'   
-#'   for (pat in patterns) {
-#'     
-#'     if(grepl(pat, text)){
-#'       gsub(pat, )
-#'     }
-#'     
-#'   }
-#' 
-#'   
-#'   text_with_image <- stri_replace(
-#'     str = as.character(text),
-#'     replacement = htmltools::img(src = 'images/war_winner.png', style = 'height: 45px;'),
-#'     regex = "Outcome: 1"
-#'     )
-#'   
-#' 
-#' 
-#'   
-#'   return(text_with_image)
-#' }
 
+add_map_to_table <- function(table_collapsed_data, state_flags) {
+  
+  # participant_countries <- paste(filtered_war_data()$states_participants, collapse = ',')
+   participant_countries <- unique(as.list(strsplit(table_collapsed_data$states_participants[1],",")[[1]]))
+  # 
+   countries_mapped <- map_functions$create_df_countries_locations(participant_countries)
+  # 
+   countries_mapped_flags = merge(countries_mapped, state_flags, by.x = "country", by.y = "StateName")
+  
+   map <- leaflet(countries_mapped_flags) %>%
+     # addProviderTiles("Thunderforest.Outdoors") %>% 
+     addProviderTiles("CartoDB.Positron") %>%
+     addMarkers(
+       label = ~ country,
+       layerId = ~ country,
+       icon = list(iconUrl = ~ country_flag, iconSize = c(35,35))
+     )
+   
+  
+  df$Map <- map
+    
+}
 
 #' @export
 add_country_flags <- function(country,countries_df) {
