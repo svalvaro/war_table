@@ -10,7 +10,6 @@ generate_war_table <- function(war_df, map_list) {
   reactable(
     war_df,
     defaultColDef = colDef(show = FALSE),
-    #pagination = FALSE,
     height = "800px",
     
     columns = list(
@@ -23,20 +22,19 @@ generate_war_table <- function(war_df, map_list) {
       ),
       initiators = colDef(
         html = TRUE,
-        align = "center",
-        name = glue("<div class = 'warFont tableHeader'>Initiators {htmltools::img(src = 'images/initiators.jpg', style = 'height: 24px;')}</div>"),
+        name = glue("<div class = 'warFont tableHeader'>Side A</div>"),
         show = TRUE
       ),
       defenders = colDef(
         html = TRUE,
-        align = "center",
-        name = glue("<div class = 'warFont tableHeader'>Defenders {htmltools::img(src = 'images/shield.jpg', style = 'height: 24px;')}</div>"),
+        name = glue("<div class = 'warFont tableHeader'>Side B</div>"),
         show = TRUE
       ),
       map = colDef(
         html = TRUE,
         show = TRUE,
         align = "center",
+        vAlign = "center",
         name =  glue("<div class = 'warFont tableHeader'>Map</div>"),
         cell = function(value, index) {
           map_list[[war_df$WarName[[index]]]]
