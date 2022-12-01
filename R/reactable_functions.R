@@ -32,6 +32,7 @@ generate_war_table <- function(war_df, map_list) {
       ),
       map = colDef(
         html = TRUE,
+        width = 700,
         show = TRUE,
         align = "center",
         vAlign = "center",
@@ -39,6 +40,7 @@ generate_war_table <- function(war_df, map_list) {
         cell = function(value, index) {
           map_list[[war_df$WarName[[index]]]]
           })
-    )
+    ),
+    fullWidth = TRUE
   )
 }
