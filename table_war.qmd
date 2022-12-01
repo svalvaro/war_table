@@ -12,55 +12,91 @@ box::use(
   reactable[...],
   leaflet[...],
   shinyWidgets[...],
-  htmltools[...]
+  htmltools[...],
+  curl[...]
   )
 
 shiny::fluidPage(
   
   shiny::fluidRow(
     shiny::column(
-      width = 6,
+      width = 4,
+       shiny::selectizeInput(
+        "war_selector",
+        h2("Wars:") %>% tagAppendAttributes(class = "warFont"),
+        choices = NULL,
+        multiple = TRUE,
+        options = list(placeholder = "Showing all wars")
+        ) %>% tagAppendAttributes(id = "warSelector", class = "war_selector_class")
+      ),
+    shiny::column(
+      width = 4,
        sliderInput(
         "period_time",
         h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
         min = 1823,
         max = 2003,
-        value = c(1823, 2003)
-        )
+        value = c(1823, 2003),
+        sep = ""
+        ) %>% tagAppendAttributes(id = "timeSlider")
       ),
     shiny::column(
-      width = 6,
-      sliderTextInput(
+      width = 4,
+      sliderInput(
       inputId = "casualties_input",
       h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
-      choices = c("1 K", "10 K", "100 K", "1 M", "5 M", "10 M", "20 M"),
-      selected = c("1 K", "20 M"),
-      grid = FALSE
+      min = 1e3,
+      max = 2e7,
+      step = 5e3,
+      value = c(1e3, 2e7)
       ) %>% tagAppendAttributes(id = "casualtiesSlider")
     )
   ),
   
   shiny::fluidRow(
     reactableOutput("table")
-  ),
-    
-    # absolutePanel(
-    #   class = "filterPanel",
-    #   sliderInput(
-    #     "period_time",
-    #     h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
-    #     min = 1823,
-    #     max = 2003,
-    #     value = c(1823, 2003)
-    #     ),
-    # sliderTextInput(
-    #   inputId = "casualties_input",
-    #   h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
-    #   choices = c("1 K", "10 K", "100 K", "1 M", "5 M", "10 M", "20 M"),
-    #   selected = c("1 K", "20 M"),
-    #   grid = FALSE
-    #   ) %>% tagAppendAttributes(id = "casualtiesSlider")
-    # ),
+    ),
+  shiny::fluidRow(),
+  
+  shiny::fluidRow(
+    class = "legend",
+    column(
+      width = 2,
+      class = "text-center",
+      htmltools::img(src = 'images/war_winner.png', style = 'height: 40px;'),
+      h3("Victorius")
+      ),
+    column(
+      width = 2,
+      class = "text-center",
+      htmltools::img(src = 'images/war_defeated.png', style = 'height: 40px;'),
+      h3("Defeated")
+    ),
+    column(
+      width = 2,
+      class = "text-center",
+      htmltools::img(src = 'images/stalemate.png', style = 'height: 40px;'),
+      h3("Stalemate")
+    ),
+    column(
+      width = 2,
+      class = "text-center",
+      htmltools::img(src = 'images/transform.png', style = 'height: 40px;'),
+      h3("Evolved into other war")
+    ),
+    column(
+      width = 2, 
+      class = "text-center",
+      htmltools::img(src = 'images/sword.png', style = 'height: 40px;'),
+      h3("Intiator state")
+    ),
+    column(
+      width = 2,
+      class = "text-center",
+      htmltools::img(src = 'images/skull.png', style = 'height: 40px;'),
+      h3("Casualties")
+    )
+    ),
   includeCSS("css/styles.css")
 )
 ```
@@ -86,6 +122,15 @@ process_raw_war_data <- data_processing$process_raw_war_data("data/Inter-StateWa
 
 aggregated_war_data <- data_processing$aggregate_war_data(process_raw_war_data)
 
+wars_list <- unique(aggregated_war_data$WarName)
+
+observe({
+  shiny::updateSelectInput(
+    inputId = "war_selector",
+    choices =  wars_list
+  )
+})
+
 # Maps column
 
 participant_countries <- paste(aggregated_war_data$states_participants, collapse = ',')
@@ -98,9 +143,15 @@ countries_mapped_flags = merge(countries_mapped, state_flags, by.x = "country", 
 
 map_list <- suppressMessages(map_functions$create_list_maps(aggregated_war_data, countries_mapped_flags))
 
+
+
+
 filtered_war_data <- reactive({
-  total_deaths_min <- data_processing$readable_to_numeric_casualties(input$casualties_input[1])
-  total_deaths_max <- data_processing$readable_to_numeric_casualties(input$casualties_input[2])
+  req(input$casualties_input[1])
+  req(input$casualties_input[2])
+  
+  total_deaths_min <- input$casualties_input[1]
+  total_deaths_max <- input$casualties_input[2]
   
   filtered_war_data <-  aggregated_war_data %>% 
     filter(total_deaths >= total_deaths_min,
@@ -108,6 +159,11 @@ filtered_war_data <- reactive({
            start_year >= input$period_time[1],
            end_year <= input$period_time[2]
            )
+  if (! is.null(input$war_selector)) {
+    filtered_war_data <-  aggregated_war_data %>% 
+      filter(WarName %in% input$war_selector)
+  }
+  
   return(filtered_war_data)
 })
 
@@ -115,4 +171,5 @@ output$table <- renderReactable({
   
   reactable_functions$generate_war_table(filtered_war_data(), map_list)
   })
+
 ```

@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: grenade;
-  src: url('www/fonts/GrenadeStencilRegular-XYn9.ttf');
+  src: url('www/fonts/wargate.ttf');
 }
 
 .warFont {
@@ -27,12 +27,21 @@ h1,
   font-family: 'ProgessFont' !important;
 }
 
+.body {
+  font-family: 'grenade';
+}
+
 .numbersStyling {
-  font-family: 'grenade' !important;
-  font-size: 40px !important;
+  font-size: 30px !important;
 } 
 
 /* Filter Panel */
+.shiny-input-container {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .filterPanel {
   background-color: hsla(246.7, 7.1%, 50.6%, 0.44) !important;
   top: 40%;
@@ -51,23 +60,29 @@ h1,
   display: none !important;
 }
 
-.irs-from, .irs-to {
+.irs-from, .irs-to, .irs-single, .selectize-control, .war_selector_class  {
   font-family: 'grenade' !important;
   font-size: 30px !important;
   color: #000 !important;
-  background-color: #f4f5ff91 !important;
+  background-color: #f4f5ff00 !important;
 }
 
 .irs-bar {
   border-top: 1px solid #b2bec8 !important;
   border-bottom: 1px solid #b2bec8 !important;
   background: #040404 !important;
+  top: 35px !important
+  
 }
 
 .irs {
   padding-left: 40px;
   padding-bottom: 100px;
   padding-right: 40px;
+}
+
+.irs-line {
+  visibility: hidden !important;
 }
 
 #casualtiesSlider .irs-handle {
@@ -80,7 +95,22 @@ h1,
   background-color: #fff0 !important;
 }
 
+#timeSlider .irs-handle {
+  background-image: url("images/clock.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 45px 45px !important;
+  width: 45px !important;
+  height: 45px !important;
+  border: 0px !important;
+  background-color: #fff0 !important;
+}
+
 /* Table */
+.Reactable {
+  height: 100vh !important;
+  max-height: 1500px !important;
+  margin: 100px !important;
+}
 
 .rt-tbody {
   background-image: url("https://img.freepik.com/premium-photo/old-paper-texture-background_118047-1365.jpg?w=2000");
@@ -110,37 +140,26 @@ h2 {
   font-size: 30px !important;
 }
 
-/* Scroll down inside modal*/
+.outcome_icon {
+  position: relative !important;
+  left: 30% !important;
+}
 
-.scroll-downs {
-  position: absolute;
-  top: 95%;
-  right: 50%;
-  margin: auto;
-  width :34px;
-  height: 55px;
+.rt-page-info, .rt-page-button {
+  font-family: 'grenade' !important;
+  font-size: 25px !important;
 }
-.mousey {
-  width: 3px;
-  padding: 10px 15px;
-  height: 35px;
-  border: 2px solid #000;
-  border-radius: 25px;
-  opacity: 0.75;
-  box-sizing: content-box;
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
-.scroller {
-  width: 3px;
-  height: 10px;
-  border-radius: 25%;
-  background-color: #000;
-  animation-name: scroll;
-  animation-duration: 2.2s;
-  animation-timing-function: cubic-bezier(.15,.41,.69,.94);
-  animation-iteration-count: infinite;
+
+
+.legend {
+  margin-top: 50px !important;
+  opacity: 0.6 !important;
 }
-@keyframes scroll {
-  0% { opacity: 0; }
-  10% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(15px); opacity: 0;}
+
+.text-center {
+  text-align: center;
 }

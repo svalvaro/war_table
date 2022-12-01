@@ -20,13 +20,15 @@ process_raw_war_data <- function(data_dir) {
     mutate(
       `alpha-2` = tolower(`alpha-2`)
     )
-  table_wars$country_flag <- lapply(table_wars$StateName,add_country_flags, countries_df = countries_df)
+  table_wars$country_flag <- lapply(table_wars$StateName, add_country_flags, countries_df = countries_df)
   
   table_wars$StateNameShow <- glue("<span class='stateName fontStateTable'><img src='{table_wars$country_flag}' height='25'> {table_wars$StateName}</span>")
   table_wars$BatDeath <- as.numeric(lapply(X = table_wars$BatDeath, round_casualties))
   
   columns_to_keep <- c("WarName", "Side", "StateName","country_flag","StateNameShow",  "StartYear1", "EndYear1", "EndYear2",
                        "WhereFought", "Initiator", "Outcome", "BatDeath")
+  table_wars$StateNameShow <- gsub("United States of America", "USA", table_wars$StateNameShow)
+  
   table_wars <-  
     table_wars %>%
     select(columns_to_keep) %>%
@@ -40,8 +42,16 @@ process_raw_war_data <- function(data_dir) {
       total_deaths = sum(BatDeath, na.rm = TRUE),
       StateNameShow = ifelse(
         Initiator == 1,
-        glue("{htmltools::img(src = 'images/sword.png', style = 'height: 24px;')} {StateNameShow} "),
-        StateNameShow
+        glue(
+          "
+          <span>
+          <div title = 'This state started the war', style = 'display: inline;'>
+          {htmltools::img(src = 'images/sword.png', style = 'height: 24px;')}
+          </div> {StateNameShow}
+          </span>
+          "
+          ),
+        glue("   {StateNameShow}")
         ),
       states_participants = paste0(StateName, collapse = ',') 
       ) %>%
@@ -79,14 +89,14 @@ aggregate_war_data <- function(table_wars) {
       defenders = ifelse(
         all(Initiator == FALSE),
         glue(
-        "Outcome: {Outcome}<br>
+        "<div class = 'outcome_icon'>Outcome: {Outcome}</div><br>
         <br>
         {paste0(country_details, collapse = '\n')}"),
         ""),
       initiators = ifelse(
         any(Initiator == TRUE),
         glue(
-        "Outcome: {Outcome}<br>
+        "<div class = 'outcome_icon'>Outcome: {Outcome}</div><br>
         <br>
         {paste0(country_details, collapse = '\n')}"),
         "")
@@ -114,15 +124,21 @@ aggregate_war_data <- function(table_wars) {
           initiators
         ),
         initiators =  gsub(
+          "Outcome: 3",
+          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
+          initiators
+        ),
+        initiators =  gsub(
+          "Outcome: 4",
+          htmltools::img(src = 'images/transform.png', style = 'height: 55px;'),
+          initiators
+        ),
+        initiators =  gsub(
           "Outcome: 6",
           htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
           initiators
         ),
-        defenders =  gsub(
-          "Outcome: 6",
-          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
-          defenders
-        ),
+        
         defenders =  gsub(
           "Outcome: 1",
           htmltools::img(src = 'images/war_winner.png', style = 'height: 55px;'),
@@ -132,7 +148,22 @@ aggregate_war_data <- function(table_wars) {
           "Outcome: 2",
           htmltools::img(src = 'images/war_defeated.png', style = 'height: 55px;'),
           defenders
-        )
+        ),
+        defenders =  gsub(
+          "Outcome: 3",
+          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
+          defenders
+        ),
+        defenders =  gsub(
+          "Outcome: 4",
+          htmltools::img(src = 'images/transform.png', style = 'height: 55px;'),
+          defenders
+        ),
+        defenders =  gsub(
+          "Outcome: 6",
+          htmltools::img(src = 'images/stalemate.png', style = 'height: 55px;'),
+          defenders
+        ),
       ) %>%
       ungroup()
     
@@ -249,6 +280,7 @@ readable_casualties <- function(casualties) {
 
 #' @export
 readable_to_numeric_casualties <- function(casualties) {
+
   if (endsWith(casualties, "K")) return(as.numeric(gsub(" K", "", casualties)) * 1e3)
   if (endsWith(casualties, "M")) return(as.integer(gsub(" M", "", casualties)) *  1e6)
 }
