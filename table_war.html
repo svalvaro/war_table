@@ -64,7 +64,7 @@ ul.task-list{list-style: none;}
 <div class="col-sm-4">
 <div class="form-group shiny-input-container war_selector_class" id="warSelector">
 <label class="control-label" id="war_selector-label" for="war_selector">
-<h2 class="warFont anchored">Wars:</h2>
+<h4 class="warFont anchored">Wars:</h4>
 </label>
 <div>
 <select id="war_selector" class="form-control" multiple="multiple"></select>
@@ -75,7 +75,7 @@ ul.task-list{list-style: none;}
 <div class="col-sm-4">
 <div class="form-group shiny-input-container" id="timeSlider">
 <label class="control-label" id="period_time-label" for="period_time">
-<h2 class="warFont anchored">Time Period:</h2>
+<h4 class="warFont anchored">Time Period:</h4>
 </label>
 <input class="js-range-slider" id="period_time" data-skin="shiny" data-type="double" data-min="1823" data-max="2003" data-from="1823" data-to="2003" data-step="1" data-grid="true" data-grid-num="10" data-grid-snap="false" data-prettify-separator="" data-prettify-enabled="false" data-keyboard="true" data-drag-interval="true" data-data-type="number">
 </div>
@@ -83,7 +83,7 @@ ul.task-list{list-style: none;}
 <div class="col-sm-4">
 <div class="form-group shiny-input-container" id="casualtiesSlider">
 <label class="control-label" id="casualties_input-label" for="casualties_input">
-<h2 class="warFont anchored">Total Casualties:</h2>
+<h4 class="warFont anchored">Casualties:</h4>
 </label>
 <input class="js-range-slider" id="casualties_input" data-skin="shiny" data-type="double" data-min="1000" data-max="20000000" data-from="1000" data-to="20000000" data-step="5000" data-grid="true" data-grid-num="9.9995" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-drag-interval="true" data-data-type="number">
 </div>
@@ -92,31 +92,30 @@ ul.task-list{list-style: none;}
 <div class="row">
 <div id="table" class="reactable html-widget html-widget-output" style="width:auto; height:auto; " data-reactable-output="table"></div>
 </div>
-<div class="row"></div>
 <div class="row legend">
 <div class="col-sm-2 text-center">
-<img src="images/war_winner.png" style="height: 40px;">
-<h3 class="anchored">Victorius</h3>
+<img src="images/war_winner.png" style="height: 20px;">
+<h6 class="anchored">Victorius</h6>
 </div>
 <div class="col-sm-2 text-center">
-<img src="images/war_defeated.png" style="height: 40px;">
-<h3 class="anchored">Defeated</h3>
+<img src="images/war_defeated.png" style="height: 20px;">
+<h6 class="anchored">Defeated</h6>
 </div>
 <div class="col-sm-2 text-center">
-<img src="images/stalemate.png" style="height: 40px;">
-<h3 class="anchored">Stalemate</h3>
+<img src="images/stalemate.png" style="height: 20px;">
+<h6 class="anchored">Stalemate</h6>
 </div>
 <div class="col-sm-2 text-center">
-<img src="images/transform.png" style="height: 40px;">
-<h3 class="anchored">Evolved into other war</h3>
+<img src="images/transform.png" style="height: 20px;">
+<h6 class="anchored">Evolved into other war</h6>
 </div>
 <div class="col-sm-2 text-center">
-<img src="images/sword.png" style="height: 40px;">
-<h3 class="anchored">Intiator state</h3>
+<img src="images/sword.png" style="height: 20px;">
+<h6 class="anchored">Intiator state</h6>
 </div>
 <div class="col-sm-2 text-center">
-<img src="images/skull.png" style="height: 40px;">
-<h3 class="anchored">Casualties</h3>
+<img src="images/skull.png" style="height: 20px;">
+<h6 class="anchored">Casualties</h6>
 </div>
 </div>
 <style type="text/css">#quarto-content, .title {
@@ -125,7 +124,7 @@ ul.task-list{list-style: none;}
 }
 
 #quarto-document-content {
-  width: 60vw !important;
+  width: 85vw !important;
 }
 
 @font-face {
@@ -142,6 +141,10 @@ ul.task-list{list-style: none;}
   font-family: 'ProgessFont' !important;
 }
 
+h1 {
+  font-size: 30px !important;
+}
+
 h1,
 .warName,
 .stateName {
@@ -153,7 +156,7 @@ h1,
 }
 
 .numbersStyling {
-  font-size: 30px !important;
+  font-size: 15px !important;
 } 
 
 /* Filter Panel */
@@ -171,7 +174,7 @@ h1,
 
 .irs-from,
 .irs-to {
-  font-size: 18px !important;
+  font-size: 15px !important;
   top: -10px !important;
 }
 
@@ -183,7 +186,7 @@ h1,
 
 .irs-from, .irs-to, .irs-single, .selectize-control, .war_selector_class  {
   font-family: 'grenade' !important;
-  font-size: 30px !important;
+  font-size: 15px !important;
   color: #000 !important;
   background-color: #f4f5ff00 !important;
 }
@@ -192,14 +195,18 @@ h1,
   border-top: 1px solid #b2bec8 !important;
   border-bottom: 1px solid #b2bec8 !important;
   background: #040404 !important;
-  top: 35px !important
-  
+  top: 31px !important
+  height: 4px !important;
 }
 
 .irs {
   padding-left: 40px;
   padding-bottom: 100px;
   padding-right: 40px;
+}
+
+.form-group {
+  margin-bottom: -15px !important;
 }
 
 .irs-line {
@@ -209,9 +216,9 @@ h1,
 #casualtiesSlider .irs-handle {
   background-image: url("images/skull.png") !important;
   background-repeat: no-repeat !important;
-  background-size: 53px 48px !important;
-  width: 53px !important;
-  height: 48px !important;
+  background-size: 43px 38px !important;
+  width: 43px !important;
+  height: 38px !important;
   border: 0px !important;
   background-color: #fff0 !important;
 }
@@ -219,18 +226,17 @@ h1,
 #timeSlider .irs-handle {
   background-image: url("images/clock.png") !important;
   background-repeat: no-repeat !important;
-  background-size: 45px 45px !important;
-  width: 45px !important;
-  height: 45px !important;
+  background-size: 35px 35px !important;
+  width: 35px !important;
+  height: 35px !important;
   border: 0px !important;
   background-color: #fff0 !important;
 }
 
 /* Table */
 .Reactable {
-  height: 100vh !important;
-  max-height: 1500px !important;
-  margin: 100px !important;
+  height: 70vh !important;
+  max-height: 1000px !important;
 }
 
 .rt-tbody {
@@ -254,11 +260,11 @@ h2 {
 }
 
 .tableHeader {
-  font-size: 30px !important;
+  font-size: 20px !important;
 }
 
 .fontStateTable {
-  font-size: 30px !important;
+  font-size: 15px !important;
 }
 
 .outcome_icon {
@@ -268,13 +274,12 @@ h2 {
 
 .rt-page-info, .rt-page-button {
   font-family: 'grenade' !important;
-  font-size: 25px !important;
+  font-size: 12px !important;
 }
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
-
 
 .legend {
   margin-top: 50px !important;

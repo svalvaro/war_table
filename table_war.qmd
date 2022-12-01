@@ -23,7 +23,7 @@ shiny::fluidPage(
       width = 4,
        shiny::selectizeInput(
         "war_selector",
-        h2("Wars:") %>% tagAppendAttributes(class = "warFont"),
+        h4("Wars:") %>% tagAppendAttributes(class = "warFont"),
         choices = NULL,
         multiple = TRUE,
         options = list(placeholder = "Showing all wars")
@@ -33,7 +33,7 @@ shiny::fluidPage(
       width = 4,
        sliderInput(
         "period_time",
-        h2("Time Period:") %>% tagAppendAttributes(class = "warFont"),
+        h4("Time Period:") %>% tagAppendAttributes(class = "warFont"),
         min = 1823,
         max = 2003,
         value = c(1823, 2003),
@@ -44,7 +44,7 @@ shiny::fluidPage(
       width = 4,
       sliderInput(
       inputId = "casualties_input",
-      h2("Total Casualties:") %>% tagAppendAttributes(class = "warFont"),
+      h4("Casualties:") %>% tagAppendAttributes(class = "warFont"),
       min = 1e3,
       max = 2e7,
       step = 5e3,
@@ -56,51 +56,49 @@ shiny::fluidPage(
   shiny::fluidRow(
     reactableOutput("table")
     ),
-  shiny::fluidRow(),
   
   shiny::fluidRow(
     class = "legend",
     column(
       width = 2,
       class = "text-center",
-      htmltools::img(src = 'images/war_winner.png', style = 'height: 40px;'),
-      h3("Victorius")
+      htmltools::img(src = 'images/war_winner.png', style = 'height: 20px;'),
+      h6("Victorius")
       ),
     column(
       width = 2,
       class = "text-center",
-      htmltools::img(src = 'images/war_defeated.png', style = 'height: 40px;'),
-      h3("Defeated")
+      htmltools::img(src = 'images/war_defeated.png', style = 'height: 20px;'),
+      h6("Defeated")
     ),
     column(
       width = 2,
       class = "text-center",
-      htmltools::img(src = 'images/stalemate.png', style = 'height: 40px;'),
-      h3("Stalemate")
+      htmltools::img(src = 'images/stalemate.png', style = 'height: 20px;'),
+      h6("Stalemate")
     ),
     column(
       width = 2,
       class = "text-center",
-      htmltools::img(src = 'images/transform.png', style = 'height: 40px;'),
-      h3("Evolved into other war")
+      htmltools::img(src = 'images/transform.png', style = 'height: 20px;'),
+      h6("Evolved into other war")
     ),
     column(
       width = 2, 
       class = "text-center",
-      htmltools::img(src = 'images/sword.png', style = 'height: 40px;'),
-      h3("Intiator state")
+      htmltools::img(src = 'images/sword.png', style = 'height: 20px;'),
+      h6("Intiator state")
     ),
     column(
       width = 2,
       class = "text-center",
-      htmltools::img(src = 'images/skull.png', style = 'height: 40px;'),
-      h3("Casualties")
+      htmltools::img(src = 'images/skull.png', style = 'height: 20px;'),
+      h6("Casualties")
     )
     ),
   includeCSS("css/styles.css")
 )
 ```
-
 
 ```{r}
 #| context: server

@@ -64,7 +64,7 @@ process_raw_war_data <- function(data_dir) {
     group_by(WarName) %>% 
     mutate(
       war_details = glue(
-      "<div class = 'warName' style='font-size: 45px;'>{WarName}<br></div>
+      "<div class = 'warName' style='font-size: 25px;'>{WarName}<br></div>
       <div class='numbersStyling'>{start_year} - {end_year}</div><br>
       <div class = 'numbersStyling'>{readable_total_deaths} {htmltools::img(src = 'images/skull.png', style = 'height: 35px;')}</div>"
       ),

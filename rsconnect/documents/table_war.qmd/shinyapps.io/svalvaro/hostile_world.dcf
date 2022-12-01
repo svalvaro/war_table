@@ -5,10 +5,10 @@ account: svalvaro
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7787671
-bundleId: 6578833
+bundleId: 6579298
 url: https://svalvaro.shinyapps.io/hostile_world/
-when: 1669927643.47602
-lastSyncTime: 1669927643.47603
+when: 1669934714.9356
+lastSyncTime: 1669934714.93561
 quarto_version: 1.0.38
 quarto_engines: knitr
 asMultiple: FALSE
